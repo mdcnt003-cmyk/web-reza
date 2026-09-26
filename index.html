@@ -21,6 +21,25 @@
 </head>
 <body>
 
+  <!-- Preloader Loading Animation (0% - 100%) -->
+  <div id="preloader" class="preloader-overlay">
+    <div class="preloader-content text-center">
+      <div class="preloader-logo mb-2">
+        <i class="bi bi-code-slash text-primary"></i>
+      </div>
+      <h4 class="fw-bold text-white mb-1">Profile Identity</h4>
+      <p class="text-light-50 small mb-3">Memuat sistem & antarmuka...</p>
+      
+      <!-- Progress Bar Container -->
+      <div class="preloader-bar-bg mb-2">
+        <div id="preloader-bar" class="preloader-bar-fill"></div>
+      </div>
+      
+      <!-- Counter Number -->
+      <div class="preloader-percent fw-bold" id="preloader-percent">0%</div>
+    </div>
+  </div>
+
   <!-- 1. Navigasi (Brand + 3 Tautan Bagian Halaman) -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm py-3">
     <div class="container">
@@ -32,7 +51,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
-        <ul class="navbar-nav gap-lg-3 text-center mt-3 mt-lg-0">
+        <ul class="navbar-nav gap-lg-3 text-center align-items-center mt-3 mt-lg-0">
           <li class="nav-item">
             <a class="nav-link active" href="#beranda">Beranda</a>
           </li>
@@ -41,6 +60,12 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#layanan">Layanan & Keahlian</a>
+          </li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <button id="themeToggleBtn" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1 d-inline-flex align-items-center gap-2" type="button" aria-label="Ganti Tema Gelap / Terang">
+              <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+              <span id="themeText" class="small fw-semibold">Gelap</span>
+            </button>
           </li>
         </ul>
       </div>
@@ -472,5 +497,85 @@
 
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script Animasi Loading 0% - 100% & Dark Mode Toggle -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1. Loading Animation Logic
+      let currentProgress = 0;
+      const barElement = document.getElementById('preloader-bar');
+      const percentTextElement = document.getElementById('preloader-percent');
+      const preloaderElement = document.getElementById('preloader');
+
+      const loadTimer = setInterval(function () {
+        currentProgress += Math.floor(Math.random() * 4) + 2;
+        
+        if (currentProgress > 100) {
+          currentProgress = 100;
+        }
+
+        if (barElement) {
+          barElement.style.width = currentProgress + '%';
+        }
+        if (percentTextElement) {
+          percentTextElement.textContent = currentProgress + '%';
+        }
+
+        if (currentProgress >= 100) {
+          clearInterval(loadTimer);
+          setTimeout(function () {
+            if (preloaderElement) {
+              preloaderElement.classList.add('fade-out');
+              setTimeout(function () {
+                preloaderElement.style.display = 'none';
+              }, 500);
+            }
+          }, 250);
+        }
+      }, 25);
+
+      // 2. Dark Mode Toggle Logic
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
+      const htmlElement = document.documentElement;
+
+      function applyTheme(isDark) {
+        if (isDark) {
+          htmlElement.setAttribute('data-bs-theme', 'dark');
+          document.body.classList.add('dark-theme');
+          themeIcon.className = 'bi bi-sun-fill text-warning';
+          themeText.textContent = 'Terang';
+          localStorage.setItem('reza_theme', 'dark');
+        } else {
+          htmlElement.setAttribute('data-bs-theme', 'light');
+          document.body.classList.remove('dark-theme');
+          themeIcon.className = 'bi bi-moon-stars-fill';
+          themeText.textContent = 'Gelap';
+          localStorage.setItem('reza_theme', 'light');
+        }
+      }
+
+      // Check Saved Preference or System Preference
+      const savedTheme = localStorage.getItem('reza_theme');
+      if (savedTheme === 'dark') {
+        applyTheme(true);
+      } else if (savedTheme === 'light') {
+        applyTheme(false);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme(true);
+      } else {
+        applyTheme(false);
+      }
+
+      // Toggle Event Listener
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function () {
+          const isCurrentlyDark = htmlElement.getAttribute('data-bs-theme') === 'dark';
+          applyTheme(!isCurrentlyDark);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
